@@ -1,0 +1,85 @@
+/* Main stylesheet */
+
+html, body {
+  background-color: #f4f4f4;
+  border: 0;
+  font-family: "Open Sans", serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.navbar {
+  align-items: stretch;
+  background-color: #26A69A;
+  display: flex;
+  height: 80px;
+  justify-content: flex-end;
+}
+
+.navbar a:nth-child(1) {
+  font-size: 30px;
+  margin-right: auto;
+}
+
+.navbar a {
+  align-items: center;
+  color: #292929;
+  display: flex;
+  font-size: 18px;
+  padding: 25px;
+  text-decoration: none;
+  transition: all 200ms;
+}
+
+.navbar a:hover {
+  background-color: #159186;
+}
+
+.video-input {
+  padding: 200px 0px;
+  text-align: center;
+}
+
+.video-input-form {
+  align-items: stretch;
+  display: flex;
+  justify-content: center;
+  padding: 0px 100px;
+}
+
+.video-input-form input[type=text] {
+  border: 1px solid #292929;
+  border-radius: 0px 0px 0px 25px;
+  flex: 0 1 500px;
+  font-size: 20px;
+  padding: 10px 30px;
+  outline: none;
+}
+
+.video-input-form button {
+  background-color: #494949;
+  border-color: #292929;
+  border-style: solid;
+  border-width: 1px 1px 1px 0px;
+  border-radius: 0px 30px 0px 0px;
+  color: #f6f6f6;
+  font-size: 15px;
+  padding: 10px;
+  outline: none;
+  transition: all 200ms;
+}
+
+.video-input-form button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.what-is-this {
+  padding: 200px 0px;
+}
+
+.how-it-works {
+  padding: 200px 0px;
+
+}

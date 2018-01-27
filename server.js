@@ -1,6 +1,6 @@
 /**
  * @fileoverview This is the server app script.
- * @author alvin.lin.dev@gmail.com (Alvin Lin)
+ * @author alvin@omgimanerd.tech (Alvin Lin)
  */
 
 const PORT = 5000;
@@ -9,15 +9,12 @@ const PORT = 5000;
 const express = require('express')
 const http = require('http')
 const path = require('path')
-const youtubeStream = require('youtube-audio-stream');
+const youtubeAudioStream = require('youtube-audio-stream');
 
 const app = express()
 const server = http.Server(app)
 
-// Routers
-
 app.set('port', PORT)
-app.disable('etag')
 app.use('/node_modules', express.static(path.join(__dirname, '/node_modules')))
 app.use('/client', express.static(path.join(__dirname, '/client')))
 
@@ -26,12 +23,12 @@ app.get('/', (request, response) => {
 })
 
 app.get('/stream/:videoId', (request, response) => {
+  const videoId = request.params.videoId
   try {
-    console.log(request.params.videoId)
-    youtubeStream(request.params.videoId).pipe(response)
+    console.log(`Fetching Youtube video ID=${videoId}`)
+    youtubeAudioStream(request.params.videoId).pipe(response)
   } catch (exception) {
-    console.log(exception)
-    response.status(500).send(exception)
+    throw exception
   }
 })
 
