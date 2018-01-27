@@ -1,19 +1,29 @@
+const audioContext = new AudioContext()
+
 function loadSound() {
   var request = new XMLHttpRequest();
-  request.open("GET", '/stream/A1GK6e52iss', true);
-  request.responseType = "arraybuffer";
+  request.open("GET", '/stream/A1GK6e52iss', true)
+  request.responseType = "arraybuffer"
 
   request.onload = function() {
-      var Data = request.response;
-      process(Data);
-  };
+    console.log('Loaded')
+    const source = audioContext.createBufferSource()
+    audioContext.decodeAudioData(request.response, buffer => {
+      console.log(buffer.byteLength)
+      console.log(buffer)
+      console.log(Int32Array(buffer))
 
-  request.send();
+      source.buffer = buffer
+      source.connect(audioContext.destination)
+      source.start(audioContext.currentTime)
+    })
+  }
+
+  request.send()
 }
 
-function process(data) {
-  console.log(data)
-}
+$('.fuck').click(() => {
+  audioContext.suspend()
+})
 
-console.log('done')
 loadSound()
