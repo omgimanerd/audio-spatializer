@@ -13,14 +13,15 @@ const rotateType = {
 }
 
 class Transform {
-  constructor(beatCount) {
+  constructor(beatCount, sequence) {
     this.beatCount = beatCount
+    this.sequence = sequence
     this.millis = 0
     this.id = 'undefined'
     for (let i = 0; i < beatCount; i++) {
       // Peak data needs to be converted into beat lengths
       // (peak[i] - peak[i-1] / sampling rate * 1000)
-      this.millis += Sequence.getNextBeatLength()
+      this.millis += this.sequence.getNextBeatLength()
     }
   }
 
@@ -39,22 +40,22 @@ class Transform {
     throw new Error('Invalid Transform')
   }
 
-  static getNewTransform(type, lastPos) {
+  static getNewTransform(sequence, type, lastPos) {
     if (!lastPos) {
       lastPos = defPoint
     }
-    console.log(type)
     switch (type) {
+    case 1:
+      return new Reset(sequence)
     case 2:
-      return new Reset()
+      return new Jump(sequence)
     case 3:
-      return new Jump()
+      return Delay.makeRandomDelay(sequence, lastPos)
     case 4:
-      return Delay.makeRandomDelay(lastPos)
+      return new Flip(sequence, lastPos)
     case 5:
-      return new Flip(lastPos)
     case 6:
-      return Rotate.makeRandomRotate(lastPos)
+      return Rotate.makeRandomRotate(sequence, lastPos)
     default:
       throw new Error('Invalid Transform')
     }
@@ -63,14 +64,14 @@ class Transform {
 
 
 class Reset extends Transform {
-  constructor() {
-    super(1)
+  constructor(sequence) {
+    super(1, sequence)
     this.id = 'Re'
   }
 
   getPoints() {
     const points = []
-    for (let i = 0; i < super.millis; i++) {
+    for (let i = 0; i < this.millis; i++) {
       points.push(defPoint.getLocation())
     }
     return points
@@ -83,15 +84,15 @@ class Reset extends Transform {
 
 
 class Jump extends Transform {
-  constructor() {
-    super(1)
+  constructor(sequence) {
+    super(1, sequence)
     this.id = 'Ju'
     this.target = new Point(1, Math.random() * 360, Math.random() * 360)
   }
 
   getPoints() {
     const points = []
-    for (let i = 0; i < super.millis; i++) {
+    for (let i = 0; i < this.millis; i++) {
       points.push(this.target.getLocation())
     }
     return points
@@ -104,19 +105,19 @@ class Jump extends Transform {
 
 
 class Delay extends Transform {
-  constructor(beatCount, prevPoint) {
-    super(beatCount)
+  constructor(beatCount, sequence, prevPoint) {
+    super(beatCount, sequence)
     this.prevPoint = prevPoint
     this.id = 'De'
   }
 
-  static makeRandomDelay(lastPos) {
-    return new Delay(Math.random() * 4 + 1, lastPos)
+  static makeRandomDelay(sequence, lastPos) {
+    return new Delay(Math.random() * 4 + 1, sequence, lastPos)
   }
 
   getPoints() {
     const points = []
-    for (let i = 0; i < super.millis; i++) {
+    for (let i = 0; i < this.millis; i++) {
       points.push(this.prevPoint.getLocation())
     }
     return points
@@ -129,8 +130,8 @@ class Delay extends Transform {
 
 
 class Flip extends Transform {
-  constructor(prevPoint) {
-    super(1)
+  constructor(sequence, prevPoint) {
+    super(1, sequence)
     this.prevPoint = prevPoint
     this.newPoint = prevPoint
     this.id = 'Fl'
@@ -139,9 +140,10 @@ class Flip extends Transform {
   getPoints() {
     const newPoint = this.prevPoint.flip()
     const points = []
-    for (let i = 0; i < super.millis; i++) {
+    for (let i = 0; i < this.millis; i++) {
       points.push(newPoint.getLocation())
     }
+    return points
   }
 
   getEndPoint() {
@@ -151,16 +153,18 @@ class Flip extends Transform {
 
 
 class Rotate extends Transform {
-  constructor(beatCount, prevPoint, destPoint, rotateType) {
-    super()
+  constructor(beatCount, sequence, prevPoint, destPoint, rotateType) {
+    super(beatCount, sequence)
     this.prevPoint = prevPoint
     this.destPoint = destPoint
     this.rotateType = rotateType
     this.id = 'Ro'
   }
 
-  static makeRandomRotate(lastPos) {
-    return new Rotate(Math.random() * 3 + 1,
+  static makeRandomRotate(sequence, lastPos) {
+    return new Rotate(
+      Math.random() * 3 + 1,
+      sequence,
       lastPos,
       new Point(1, Math.random() * 360, Math.random() * 360),
       Math.floor(Math.random() * 2) === 0 ? rotateType.LIN : rotateType.QUAD)
@@ -169,9 +173,11 @@ class Rotate extends Transform {
   getPoints() {
     const delta = this.prevPoint.getDeltas(this.destPoint)
     const points = []
-    for (let i = 0; i < super.millis; i++) {
-      points.push(this.rotateType(delta, super.millis, i).getLocation())
+    for (let i = 0; i < this.millis; i++) {
+      points.push(this.rotateType(
+        delta, this.millis + 0.00001, i).getLocation())
     }
+    return points
   }
 
   getEndPoint() {

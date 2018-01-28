@@ -19,7 +19,7 @@ class Pattern {
     return this.t1.toString() + this.t2.toString() + this.t3.toString()
   }
 
-  static getNext(pdf, lastPos) {
+  static getNext(sequence, pdf, lastPos) {
     const bounds = [0]
     let last = 0
     for (const votes of Object.values(pdf)) {
@@ -31,7 +31,7 @@ class Pattern {
     while (bounds[last] < next) {
       last++
     }
-    return Transform.getNewTransform(last, lastPos)
+    return Transform.getNewTransform(sequence, last, lastPos)
   }
 }
 
@@ -46,29 +46,31 @@ class Sequence {
 
     this.pointList = []
 
-    const first = Pattern.getNext(this.equal, null)
+    const first = Pattern.getNext(this, this.equal, null)
     this.transformList.push(first)
     this.pointList.concat(first.getPoints())
     this.millisEnd.push(this.pointList.length)
 
-    const second = Pattern.getNext(this.equal, first.getEndPoint())
+    const second = Pattern.getNext(this, this.equal, first.getEndPoint())
     this.transformList.push(second)
     this.pointList.concat(second.getPoints())
     this.millisEnd.push(this.pointList.length)
 
-    const third = Pattern.getNext(this.equal, second.getEndPoint())
+    const third = Pattern.getNext(this, this.equal, second.getEndPoint())
     this.transformList.push(third)
     this.pointList.concat(third.getPoints())
     this.millisEnd.push(this.pointList.length)
 
     while (this.currentBeat < peakList.length) {
-      const pattern = new Pattern(
-        this.transformList[this.transformList.length - 3],
-        this.transformList[this.transformList.length - 2],
-        this.transformList[this.transformList.length - 1])
-      const nextToAdd = pattern.getNext(this.pdf[pattern.toString()],
+      // const pattern = new Pattern(
+      //   this.transformList[this.transformList.length - 3],
+      //   this.transformList[this.transformList.length - 2],
+      //   this.transformList[this.transformList.length - 1])
+      const nextToAdd = Pattern.getNext(
+        this,
+        this.equal,
         this.transformList[this.transformList.length - 1].getEndPoint())
-      this.pointsList.concat(nextToAdd.getPoints())
+      this.pointList = this.pointList.concat(nextToAdd.getPoints())
       this.transformList.push(nextToAdd)
       this.millisEnd.push(this.pointList.length)
     }
@@ -83,7 +85,7 @@ class Sequence {
     this.pdf = pdf
   }
 
-  static getNextBeatLength() {
+  getNextBeatLength() {
     const len = this.peakList[this.currentBeat]
     this.currentBeat++
     return len

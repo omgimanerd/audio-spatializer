@@ -129,14 +129,11 @@ $(document).ready(() => {
 
             // Request the current state of the markov chain from the server
             socket.emit('get-markov', pdf => {
-              console.log(peaks)
-              console.log(pdf)
               const sequence = new Sequence(pdf, peaks)
               const positionVector = sequence.getPointList()
               audioIntervalId = setInterval(() => {
                 const frame = Math.round(
                   audioContext.currentTime * 1000 - audioContextDelay)
-                console.log(frame, positionVector[frame])
                 source.setPosition(...positionVector[frame])
               }, UPDATE_RATE)
 
