@@ -10,7 +10,7 @@ class Transform {
   constructor(beatCount) {
     this.beatCount = beatCount
     this.millis = 0
-    const id
+    this.id
     for (let i = 0; i < beatCount; i++) {
       // Peak data needs to be converted into beat lengths
       // (peak[i] - peak[i-1] / sampling rate * 1000)
