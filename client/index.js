@@ -4,26 +4,6 @@
  * @author Searnsy
  */
 
-// const processAudioStream = (videoId, callback) => {
-//   const request = new XMLHttpRequest()
-//   request.open('GET', `/stream/${videoId}`, true)
-//   request.responseType = 'arraybuffer'
-//   request.onload = () => {
-//     console.log(callback)
-//     callback(request.response)
-//   }
-//   request.send()
-// }
-//
-// const playAudioStream = (audioContext, audioStream) => {
-//   const bufferSource = audioContext.createBufferSource()
-//   audioContext.decodeAudioData(audioStream, buffer => {
-//     bufferSource.buffer = buffer
-//     bufferSource.connect(audioContext.destination)
-//     bufferSource.start(audioContext.currentTime)
-//   })
-// }
-
 $(document).ready(() => {
   const audioContext = new AudioContext()
   const resonanceAudio = new ResonanceAudio(audioContext)
@@ -45,7 +25,6 @@ $(document).ready(() => {
         audioContext.createMediaElementSource(audioElement)
       const source = resonanceAudio.createSource()
       audioElementSource.connect(source.input)
-
 
       let x = -1
       const convert = 3.14 / 180
