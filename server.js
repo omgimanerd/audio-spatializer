@@ -44,6 +44,10 @@ io.on('connection', socket => {
   socket.on('markov-update', data => {
     // TODO: do something with data
   })
+
+  socket.on('get-markov', callback => {
+
+  })
 })
 
 // Starts the server.

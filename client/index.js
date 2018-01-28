@@ -4,7 +4,7 @@
  * @author Searnsy
  */
 /* eslint-disable require-jsdoc */
-/* globals $, ResonanceAudio */
+/* globals $, ResonanceAudio, io */
 
 const UPDATE_RATE = 1
 
@@ -28,6 +28,12 @@ const arrayMax = data => {
   return max
 }
 
+/**
+ * This method calculates the peaks in the audio buffer and computes a list
+ * of vector positions to place the the audio source.
+ * @param {AudioBufferSourceNode} buffer The audio buffer data
+ * @param {Function} callback The callback to invoke with the vector positions
+ */
 const calculateSpatialVectors = (buffer, callback) => {
   // Create offline context
   const offlineAudioContext = new OfflineAudioContext(
@@ -65,16 +71,15 @@ const calculateSpatialVectors = (buffer, callback) => {
   }
 }
 
-const spatializeAudio = bufferSource => {
-
-}
-
 $(document).ready(() => {
   // Create an AudioContext for output
   const audioContext = new AudioContext()
   const bufferSource = audioContext.createBufferSource()
   const resonanceAudio = new ResonanceAudio(audioContext)
   resonanceAudio.output.connect(audioContext.destination)
+
+  // Create a socket object for communicating information about the markov chain
+  const socket = io()
 
   $('.button-loading').hide()
   let processing = false
