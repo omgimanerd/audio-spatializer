@@ -5,20 +5,16 @@ const point = require('./point')
 const Point = point.Point
 
 const defPoint = new Point(1, 90, 90)
-const resetID = 'Re'
-const jumpID = 'Ju'
-const delayID = 'De'
-const flipID = 'Fl'
-const rotateID = 'Ro'
 
 class Transform {
   constructor(beatCount) {
     this.beatCount = beatCount
     this.millis = 0
+    const this.id
     for (let i = 0; i < beatCount; i++) {
       // Peak data needs to be converted into beat lengths
       // (peak[i] - peak[i-1] / sampling rate * 1000)
-      this.millis += getNextBeatLength()
+      this.millis += Sequence.getNextBeatLength()
     }
   }
 
@@ -29,7 +25,7 @@ class Transform {
 
   // eslint-disable-next-line class-methods-use-this
   toString() {
-    throw new Error('Invalid Transform')
+    return this.id
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -62,6 +58,7 @@ class Transform {
 class Reset extends Transform {
   constructor() {
     super(1)
+    this.id = 'Re'
   }
 
   getPoints() {
@@ -70,10 +67,6 @@ class Reset extends Transform {
       points.push(defPoint.getLocation())
     }
     return points
-  }
-
-  toString() {
-    return this.resetID
   }
 
   getEndPoint() {
@@ -85,6 +78,7 @@ class Reset extends Transform {
 class Jump extends Transform {
   constructor() {
     super(1)
+    this.id = 'Ju'
     this.target = new Point(1, Math.random() * 360, Math.random() * 360)
   }
 
@@ -94,10 +88,6 @@ class Jump extends Transform {
       points.push(this.target.getLocation())
     }
     return points
-  }
-
-  toString() {
-    return this.jumpID
   }
 
   getEndPoint() {
@@ -110,11 +100,11 @@ class Delay extends Transform {
   constructor(beatCount, prevPoint) {
     super(beatCount)
     this.prevPoint = prevPoint
+    this.id = 'De'
   }
 
   static makeRandomDelay(lastPos) {
-    // TODO: idk
-    Math.random() * 4 + 1, lastPos
+    return new Delay(Math.random() * 4 + 1, lastPos)
   }
 
   getPoints() {
@@ -123,10 +113,6 @@ class Delay extends Transform {
       points.push(this.prevPoint.getLocation())
     }
     return points
-  }
-
-  toString() {
-    return this.delayID
   }
 
   getEndPoint() {
@@ -140,6 +126,7 @@ class Flip extends Transform {
     super(1)
     this.prevPoint = prevPoint
     this.newPoint = prevPoint
+    this.id = 'Fl'
   }
 
   getPoints() {
@@ -148,10 +135,6 @@ class Flip extends Transform {
     for (let i = 0; i < super.millis; i++) {
       points.push(newPoint.getLocation())
     }
-  }
-
-  toString() {
-    return this.flipID
   }
 
   getEndPoint() {
@@ -166,6 +149,7 @@ class Rotate extends Transform {
     this.prevPoint = prevPoint
     this.destPoint = destPoint
     this.rotateType = rotateType
+    this.id = 'Ro'
   }
 
   static makeRandomRotate(lastPos) {
@@ -181,10 +165,6 @@ class Rotate extends Transform {
     for (let i = 0; i < super.millis; i++) {
       points.push(this.rotateType(delta, super.millis, i).getLocation())
     }
-  }
-
-  toString() {
-    return this.rotateID
   }
 
   getEndPoint() {

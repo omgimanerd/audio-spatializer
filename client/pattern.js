@@ -83,7 +83,7 @@ class Sequence {
     this.pdf = pdf
   }
 
-  getNextBeatLength() {
+  static getNextBeatLength() {
     const len = this.peakList[this.currentBeat]
     this.currentBeat++
     return len
