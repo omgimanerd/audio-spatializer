@@ -65,6 +65,7 @@ function loadAudioBuffer(soundfile) {
 function lowFilter(buffer){
     // Create offline context
     var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+    console.log(buffer.sampleRate)
 
     // Create buffer source
     var source = offlineContext.createBufferSource();
@@ -88,8 +89,57 @@ function lowFilter(buffer){
     offlineContext.oncomplete = function(e) {
       // Filtered buffer!
       var filteredBuffer = e.renderedBuffer;
-      console.log(filteredBuffer)
+      process(e)
     };
+}
+
+function process(e) {
+  var filteredBuffer = e.renderedBuffer;
+  //If you want to analyze both channels, use the other channel later
+  var data = filteredBuffer.getChannelData(0);
+  var max = arrayMax(data);
+  var min = arrayMin(data);
+  var threshold = min + (max - min) * 0.5;
+  var peaks = getPeaksAtThreshold(data, threshold);
+  var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);
+  console.log(peaks)
+  console.log(intervalCounts)
+}
+
+function getPeaksAtThreshold(data, threshold) {
+  var peaksArray = [];
+  var length = data.length;
+  for (var i = 0; i < length;) {
+    if (data[i] > threshold) {
+      peaksArray.push(i);
+      // Skip forward ~ 1/4s to get past this peak.
+      i += 10000;
+    }
+    i++;
+  }
+  return peaksArray;
+}
+
+function arrayMin(arr) {
+  var len = arr.length,
+    min = Infinity;
+  while (len--) {
+    if (arr[len] < min) {
+      min = arr[len];
+    }
+  }
+  return min;
+}
+
+function arrayMax(arr) {
+  var len = arr.length,
+    max = -Infinity;
+  while (len--) {
+    if (arr[len] > max) {
+      max = arr[len];
+    }
+  }
+  return max;
 }
 
 loadAudioBuffer()
