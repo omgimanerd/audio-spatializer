@@ -6,7 +6,7 @@
 /* eslint-disable require-jsdoc */
 /* globals $, ResonanceAudio, io, Sequence  */
 
-const UPDATE_RATE = 1
+const UPDATE_RATE = 800
 
 const arrayMin = data => {
   let min = Infinity
@@ -129,15 +129,16 @@ $(document).ready(() => {
 
             // Request the current state of the markov chain from the server
             socket.emit('get-markov', pdf => {
-              console.log(peaks)
-              console.log(pdf)
-              const sequence = new Sequence(pdf, peaks)
-              const positionVector = sequence.getPointList()
+              // const sequence = new Sequence(pdf, peaks)
+              // const positionVector = sequence.getPointList()
+              let x = 2
               audioIntervalId = setInterval(() => {
-                const frame = Math.round(
-                  audioContext.currentTime * 1000 - audioContextDelay)
-                console.log(frame, positionVector[frame])
-                source.setPosition(...positionVector[frame])
+                source.setPosition(x, 0, 0)
+                x *= -1
+                // const frame = Math.round(
+                //   audioContext.currentTime * 1000 - audioContextDelay)
+                // console.log(frame, positionVector[frame])
+                // source.setPosition(...positionVector[frame])
               }, UPDATE_RATE)
 
               bufferSource.onended = () => {
