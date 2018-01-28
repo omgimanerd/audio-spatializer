@@ -2,7 +2,13 @@ const points = require('./point')
 const Point = points.Point
 const rotateType = points.rotateType
 
-defPoint = new Point(1, 90, 90)
+const defPoint = new Point(1, 90, 90)
+const resetID = "Re"
+const jumpID = "Ju"
+const delayID = "De"
+const flipID = "Fl"
+const rotateID = "Ro"
+
 
 export class Transform {
   constructor(beatCount){
@@ -62,7 +68,7 @@ class Reset extends Transform{
   }
 
   toString(){
-    return "Re"
+    return resetID
   }
 
   getEndPoint(){
@@ -86,7 +92,7 @@ class Jump extends Transform{
   }
 
   toString(){
-    return "Ju"
+    return jumpID
   }
 
   getEndPoint(){
@@ -114,7 +120,7 @@ class Delay extends Transform {
   }
 
   toString(){
-    return "De"
+    return delayID
   }
 
   getEndPoint(){
@@ -139,7 +145,7 @@ class Flip extends Transform{
   }
 
   toString(){
-    return "Fl"
+    return flipID
   }
 
   getEndPoint(){
@@ -171,7 +177,7 @@ class Rotate extends Transform{
   }
 
   toString(){
-    return "Ro"
+    return rotateID
   }
 
   getEndPoint(){
