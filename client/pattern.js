@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+/* globals Transform */
 
 /**
  * A file to implement the idea of a "Pattern" in the spatialization.
@@ -30,7 +31,7 @@ class Pattern {
     while (bounds[last] < next) {
       last++
     }
-    return getNewTransform(last, lastPos)
+    return Transform.getNewTransform(last, lastPos)
   }
 }
 
@@ -45,31 +46,37 @@ class Sequence {
 
     this.pointList = []
 
-    first = Pattern.getNext(equal, null)
-    transformList.push(first)
-    pointList.concat(first.getPoints())
-    millisEnd.push(pointList.length)
+    const first = Pattern.getNext(this.equal, null)
+    this.transformList.push(first)
+    this.pointList.concat(first.getPoints())
+    this.millisEnd.push(this.pointList.length)
 
-    second = Pattern.getNext(equal, first.getEndPoint())
-    transformList.push(second)
-    pointList.concat(second.getPoints())
-    millisEnd.push(pointList.length)
+    const second = Pattern.getNext(this.equal, first.getEndPoint())
+    this.transformList.push(second)
+    this.pointList.concat(second.getPoints())
+    this.millisEnd.push(this.pointList.length)
 
-    third = Pattern.getNext(equal, second.getEndPoint())
-    transformList.push(third)
-    pointList.concat(third.getPoints())
-    millisEnd.push(pointList.length)
+    const third = Pattern.getNext(this.equal, second.getEndPoint())
+    this.transformList.push(third)
+    this.pointList.concat(third.getPoints())
+    this.millisEnd.push(this.pointList.length)
 
-    while (currentBeat < peakList.length) {
-      pattern = new Pattern(transformList[transformList.length - 3],
-        transformList[transformList.length - 2],
-        transformList[transformList.length - 1])
-      nextToAdd = pattern.getNext(this.pdf[pattern.toString()],
-        transformList[transformList.length - 1].getEndPoint())
-      pointsList.concat(nextToAdd.getPoints())
-      transformList.push(nextToAdd)
-      millisEnd.push(pointList.length)
+    while (this.currentBeat < peakList.length) {
+      const pattern = new Pattern(
+        this.transformList[this.transformList.length - 3],
+        this.transformList[this.transformList.length - 2],
+        this.transformList[this.transformList.length - 1])
+      const nextToAdd = pattern.getNext(this.pdf[pattern.toString()],
+        this.transformList[this.transformList.length - 1].getEndPoint())
+      this.pointsList.concat(nextToAdd.getPoints())
+      this.transformList.push(nextToAdd)
+      this.millisEnd.push(this.pointList.length)
     }
+  }
+
+  static getVector(pdf, peaks) {
+    const sequence = new Sequence(pdf, peaks)
+    return sequence.getPointList()
   }
 
   updatePDF(pdf) {
@@ -77,8 +84,8 @@ class Sequence {
   }
 
   getNextBeatLength() {
-    len = peakList[currentBeat]
-    currentBeat++
+    const len = this.peakList[this.currentBeat]
+    this.currentBeat++
     return len
   }
 
@@ -93,23 +100,18 @@ class Sequence {
     } else if (curMillis < this.millisEnd[(start + end) / 2]) {
       return this.bnsCurrentTransform(curMillis, start, (start + end) / 2)
     }
-    return bnsCurrentTransform(curMillis, (start + end + 1) / 2, end)
+    return this.bnsCurrentTransform(curMillis, (start + end + 1) / 2, end)
   }
 
   getCurrentTransform(curMillis) {
-    return bnsCurrentTransform(curMillis, 0, this.millisEnd.length - 1)
+    return this.bnsCurrentTransform(curMillis, 0, this.millisEnd.length - 1)
   }
 
   getMarkovUpdate(curMillis) {
-    current = getCurrentTransform
+    const current = this.getCurrentTransform(curMillis)
     if (current < 20) {
       return this.millisEnd.slice(0, current)
     }
     return this.millisEnd.slice(current - 20, current)
   }
-}
-
-function getVector(pdf, peaks) {
-  sequence = new Sequence(pdf, peaks)
-  return sequence.getPointList()
 }
