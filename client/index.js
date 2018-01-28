@@ -4,6 +4,8 @@
  * @author Searnsy
  */
 
+const UPDATE_RATE = 10
+
 $(document).ready(() => {
   const audioContext = new AudioContext()
   const resonanceAudio = new ResonanceAudio(audioContext)
@@ -12,12 +14,12 @@ $(document).ready(() => {
   $('.video-input-form').submit(() => {
     const videoUrl = $('.video-url-input').val()
     $.post('/spatialize', { url: videoUrl }).done(data => {
-      console.log(data)
       if (!data.success) {
         alert('There was an error decoding this audio file! Fuck!')
         return
       }
       const id = data.id
+      const positionVectors = data.positionVectors
 
       const audioElement = document.createElement('audio')
       audioElement.src = `/videos/${id}.mp4`
@@ -26,15 +28,16 @@ $(document).ready(() => {
       const source = resonanceAudio.createSource()
       audioElementSource.connect(source.input)
 
-      let x = -1
-      const convert = 3.14 / 180
-      setInterval(() => {
-        source.setPosition(Math.cos(convert * Date.now()), Math.sin(convert * Date.now() ), 0)
-        x *= -1
-      }, 1)
-
+      const startTimestamp = Date.now()
       audioElement.play()
+      const audioId = setInterval(() => {
+        const deltaTime = Date.now() - startTimestamp
+        if (deltaTime > positionVectors.length || audioElement.ended) {
+          clearInterval(audioId)
+        }
+        source.setPosition(...positionVectors[deltaTime])
+      }, UPDATE_RATE)
     })
-    return false;
+    return false
   })
 })
