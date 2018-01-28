@@ -67,6 +67,11 @@ const calculateSpatialVectors = (buffer, callback) => {
         i += buffer.sampleRate / 4
       }
     }
+    for (let i = peaks.length - 1; i > 0; i--) {
+      peaks[i] -= peaks[i-1]
+      peaks[i] /= buffer.sampleRate
+      peaks[i] *= 1000
+    }
     callback(peaks)
   }
 }
