@@ -28,10 +28,8 @@ app.get('/', (request, response) => {
 app.get('/stream/:videoId', (request, response) => {
   const videoId = request.params.videoId
   try {
-    console.log('streamed')
     youtubeAudioStream(videoId).pipe(response)
   } catch (exception) {
-    console.error(exception)
     response.status(500).send(exception)
   }
 })

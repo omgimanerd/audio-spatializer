@@ -87,10 +87,10 @@ html, body {
   border-width: 1px 1px 1px 0px;
   border-radius: 0px 30px 0px 0px;
   color: #f6f6f6;
+  flex: 0 0 120px;
   font-size: 15px;
   outline: none;
   transition: all 200ms;
-  width: 120px;
 }
 
 .video-input-form button:hover {

@@ -28,7 +28,7 @@ const arrayMax = data => {
   return max
 }
 
-const calculatePositionVectors = (buffer, callback) => {
+const calculateSpatialVectors = (buffer, callback) => {
   // Create offline context
   const offlineAudioContext = new OfflineAudioContext(
     1, buffer.length, buffer.sampleRate)
@@ -65,23 +65,34 @@ const calculatePositionVectors = (buffer, callback) => {
   }
 }
 
+const spatializeAudio = bufferSource => {
+
+}
+
 $(document).ready(() => {
+  // Create an AudioContext for output
+  const audioContext = new AudioContext()
+  const bufferSource = audioContext.createBufferSource()
+  const resonanceAudio = new ResonanceAudio(audioContext)
+  resonanceAudio.output.connect(audioContext.destination)
+
+  $('.button-loading').hide()
   let processing = false
+
   $('.video-input-form').submit(() => {
     if (!processing) {
+      $('.button-loading').show()
+      $('.button-idle').hide()
+      $('.video-id-input').prop('disabled', 'disabled')
       processing = true
+      audioContext.suspend()
+
       // Open an XMLHttpRequest to stream audio data from YouTube
       const videoId = $('.video-id-input').val()
       const request = new XMLHttpRequest()
       request.open('GET', `/stream/${videoId}`, true)
       request.responseType = 'arraybuffer'
       request.onload = function() {
-        // Create an AudioContext for output
-        const audioContext = new AudioContext()
-        const bufferSource = audioContext.createBufferSource()
-        const resonanceAudio = new ResonanceAudio(audioContext)
-        resonanceAudio.output.connect(audioContext.destination)
-
         // Decode the arraybuffer from the XMLHttpRequest
         audioContext.decodeAudioData(request.response, buffer => {
           const source = resonanceAudio.createSource()
@@ -89,19 +100,37 @@ $(document).ready(() => {
           bufferSource.connect(source.input)
 
           // Process the audio stream for spatialization
-          calculatePositionVectors(buffer, peaks => {
+          calculateSpatialVectors(buffer, peaks => {
+            $('.button-loading').hide()
+            $('.button-idle').show()
+            $('.video-id-input').removeAttr('disabled')
+            processing = false
             bufferSource.start()
-            let x = 1
             const audioId = setInterval(() => {
-              source.setPosition(x, 0, 0)
-              x *= -1
+              source.setPosition(0, 0, 0)
               // source.setPosition(...peaks[bufferSource.currentTime])
             }, UPDATE_RATE)
 
             bufferSource.onended = () => {
               clearInterval(audioId)
             }
+
+            $('.pause').off().on('click', () => {
+              audioContext.suspend()
+            })
+
+            $('.resume').off().on('click', () => {
+              audioContext.resume()
+            })
           })
+        }, error => {
+          alert('Unable to process audio stream! Fuck!')
+          $('.button-loading').hide()
+          $('.button-idle').show()
+          $('.video-id-input').removeAttr('disabled')
+          processing = false
+          // eslint-disable-next-line no-console
+          console.error(error)
         })
       }
       request.send()
