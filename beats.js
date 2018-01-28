@@ -28,7 +28,6 @@ function decodeSoundFile(soundfile){
       samplerate = audioBuffer.sampleRate;
       maxvals = [];
       max = 0;
-      //playsound(soundfile)
       findPeaks(pcmdata, samplerate)
     }, function(err) { throw err })
   })
@@ -42,6 +41,7 @@ function decodeSoundFile(soundfile){
  * @return {[type]}            [description]
  */
 function findPeaks(pcmdata, samplerate){
+  console.log("doing work")
   var interval = 0.05 * 1000 ;
   index = 0 ;
   var step = Math.round( samplerate * (interval/1000) );
@@ -60,57 +60,15 @@ function findPeaks(pcmdata, samplerate){
 
     for(var i = index; i < index + step ; i++){
       max = pcmdata[i] > max ? pcmdata[i].toFixed(1)  : max ;
-      locdata.push(beatID)
     }
 
     // Spot a significant increase? Potential peak
-    bars = getbars(max) ;
     if(max-prevmax >= prevdiffthreshold){
-      bars = bars + " == peak == "
-      lr = (lr == "L" ? "R" : "L")
+      beatID += 1
+      locdata.push(index)
     }
 
     // Print out mini equalizer on commandline
-    console.log(bars, max )
     prevmax = max ; max = 0 ; index += step ;
   }, interval,pcmdata);
-}
-
-/**
- * TBD
- * @return {[type]} [description]
- */
-function detectBeats(){
-
-}
-
-/**
- * [getbars Visualize image sound using bars, from average pcmdata within a sample interval]
- * @param  {[Number]} val [the pcmdata point to be visualized ]
- * @return {[string]}     [a set of bars as string]
- */
-function getbars(val){
-  bars = ""
-  for (var i = 0 ; i < val*50 + 2 ; i++){
-    bars= bars + lr;
-  }
-  return bars ;
-}
-
-/**
- * [Plays a sound file]
- * @param  {[string]} soundfile [file to be played]
- * @return {[type]}           [void]
- */
-function playsound(soundfile){
-  // linux or raspi
-  // var create_audio = exec('aplay'+soundfile, {maxBuffer: 1024 * 500}, function (error, stdout, stderr) {
-  var create_audio = exec('ffplay -autoexit '+soundfile, {maxBuffer: 1024 * 500}, function (error, stdout, stderr) {
-    if (error !== null) {
-      console.log('exec error: ' + error);
-    }else {
-      //console.log(" finshed ");
-      //micInstance.resume();
-    }
-  });
 }
