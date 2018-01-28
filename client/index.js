@@ -68,7 +68,7 @@ const calculateSpatialVectors = (buffer, callback) => {
       }
     }
     for (let i = peaks.length - 1; i > 0; i--) {
-      peaks[i] -= peaks[i-1]
+      peaks[i] -= peaks[i - 1]
       peaks[i] /= buffer.sampleRate
       peaks[i] *= 1000
     }
@@ -77,11 +77,8 @@ const calculateSpatialVectors = (buffer, callback) => {
 }
 
 $(document).ready(() => {
-  // Create an AudioContext for output
-  const audioContext = new AudioContext()
-  const bufferSource = audioContext.createBufferSource()
-  const resonanceAudio = new ResonanceAudio(audioContext)
-  resonanceAudio.output.connect(audioContext.destination)
+  let audioContext = null
+  let audioIntervalId = null
 
   // Create a socket object for communicating information about the markov chain
   const socket = io()
@@ -95,7 +92,17 @@ $(document).ready(() => {
       $('.button-idle').hide()
       $('.video-id-input').prop('disabled', 'disabled')
       processing = true
-      audioContext.suspend()
+
+      // Create an AudioContext for output
+      if (audioContext) {
+        audioContext.close()
+        clearInterval(audioIntervalId)
+      }
+      audioContext = new AudioContext()
+      const audioContextTimestamp = Date.now()
+      const bufferSource = audioContext.createBufferSource()
+      const resonanceAudio = new ResonanceAudio(audioContext)
+      resonanceAudio.output.connect(audioContext.destination)
 
       // Open an XMLHttpRequest to stream audio data from YouTube
       const videoId = $('.video-id-input').val()
@@ -105,24 +112,27 @@ $(document).ready(() => {
       request.onload = function() {
         // Decode the arraybuffer from the XMLHttpRequest
         audioContext.decodeAudioData(request.response, buffer => {
-          const source = resonanceAudio.createSource()
-          bufferSource.buffer = buffer
-          bufferSource.connect(source.input)
-
           // Process the audio stream for spatialization
           calculateSpatialVectors(buffer, peaks => {
             $('.button-loading').hide()
             $('.button-idle').show()
             $('.video-id-input').removeAttr('disabled')
             processing = false
+
+            // Connect the audio buffer to the AudioContext for output
+            const source = resonanceAudio.createSource()
+            bufferSource.buffer = buffer
+            bufferSource.connect(source.input)
             bufferSource.start()
-            const audioId = setInterval(() => {
+            const audioContextDelay = Date.now() - audioContextTimestamp
+
+            audioIntervalId = setInterval(() => {
               source.setPosition(0, 0, 0)
-              // source.setPosition(...peaks[bufferSource.currentTime])
+              console.log(audioContext.currentTime * 1000 - audioContextDelay)
             }, UPDATE_RATE)
 
             bufferSource.onended = () => {
-              clearInterval(audioId)
+              clearInterval(audioIntervalId)
             }
 
             $('.pause').off().on('click', () => {
