@@ -6,18 +6,20 @@
 const PORT = 5000
 
 // Dependencies.
-const bodyParser = require('body-parser')
 const express = require('express')
 const http = require('http')
+const morgan = require('morgan')
 const path = require('path')
+const socketIO = require('socket.io')
 const youtubeAudioStream = require('youtube-audio-stream')
 
 const app = express()
 const server = http.Server(app)
+const io = socketIO(server)
 
 app.set('port', PORT)
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(morgan('dev'))
 app.use('/node_modules', express.static(path.join(__dirname, '/node_modules')))
 app.use('/client', express.static(path.join(__dirname, '/client')))
 
@@ -38,7 +40,14 @@ app.use((request, response) => {
   response.redirect('/')
 })
 
+io.on('connection', socket => {
+  socket.on('markov-update', data => {
+    // TODO: do something with data
+  })
+})
+
 // Starts the server.
 server.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Starting server on port ${PORT}`)
 })
