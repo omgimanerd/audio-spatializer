@@ -3,48 +3,87 @@
   <head>
     <title>Audio Spatializer</title>
     <link rel='stylesheet'
-      href='https://fonts.googleapis.com/css?family=Open+Sans' >
+      href='https://fonts.googleapis.com/css?family=Open+Sans' />
     <link rel='stylesheet' href='/client/index.css' />
   </head>
 
-  <div class='container'>
-    <div class='navbar'>
-      <a href='#'>
-        <div>
-          Audio Spatializer
-        </div>
-      </a>
-      <a href='#what-is-this'>
-        <div>
-          What is This?
-        </div>
-      </a>
-      <a href='#how-it-works'>
-        <div>
-          How it Works
-        </div>
-      </a>
+  <body>
+    <div class='visualization-underlay'>
+      <canvas></canvas>
     </div>
 
-    <div class='video-input'>
-      <h1>Enter YouTube Video URL</h1>
-      <div class='video-input-form-container'>
-        <form class='video-input-form'>
-          <input class='video-url-input' type='text' />
-          <button type='submit'>Eargasm!</button>
-        </form>
+    <div class='container'>
+      <div class='navbar'>
+        <a href='#'>
+          <div>
+            Audio Spatializer
+          </div>
+        </a>
+        <a href='#what-is-this'>
+          <div>
+            What is This?
+          </div>
+        </a>
+        <a href='https://github.com/omgimanerd/audio-spatializer'>
+          <span class='fa fa-2x fa-github'></span>
+        </a>
+      </div>
+
+      <div class='video-input'>
+        <h1>Enter YouTube Video URL</h1>
+        <div class='video-input-form-container'>
+          <form class='video-input-form'>
+            <input class='video-url-input' type='text' />
+            <button type='submit'>Eargasm!</button>
+          </form>
+        </div>
+        <div class='control-buttons-container'>
+          <button class='pause'>
+            Pause
+            <span class='fa fa-pause-circle'></span>
+          </button>
+          <button class='resume'>
+            Resume
+            <span class='fa fa-play-circle'></span>
+          </button>
+          <button class='stop'>
+            Stop
+            <span class='fa fa-stop-circle'></span>
+          </button>
+        </div>
+      </div>
+
+      <div id='what-is-this'>
+        <div>
+          <span class='fa fa-5x fa-bar-chart'></span>
+        </div>
+        <div>
+          This application downloads the given YouTube video and runs an
+          algorithm on it to gather information about the beat and structure.
+          It then streams the audio to the application and uses the
+          <a href='https://developers.google.com/resonance-audio/'>
+            Resonance Audio API
+          </a>
+          to the audio in 3D space around the listener to create an immersive
+          listening experience. This web application is best used with stereo
+          headphones or earphones and works best on dubstep or songs with a
+          strong distinguishable beat and bass line.
+          <br />
+          <br />
+          You can view the source code for this project
+          <a href='https://github.com/omgimanerd/audio-spatializer'>
+            here.
+          </a>
+        </div>
+      </div>
+
+      <div class='footer'>
+        Copyright &copy; Alvin Lin and Andrew Searns
       </div>
     </div>
+  </body>
 
-    <div id='what-is-this'>
-      <button class='pause'>Pause</button>
-      <button class='resume'>Resume</button>
-    </div>
-
-    <div id='how-it-works'>
-    </div>
-  </div>
-
+  <script src="https://use.fontawesome.com/fd39d441bf.js"></script>
   <script src='/node_modules/jquery/dist/jquery.min.js'></script>
   <script src='/node_modules/resonance-audio/build/resonance-audio.min.js'>
   </script>

@@ -9,6 +9,21 @@ html, body {
   width: 100%;
 }
 
+.visualization-underlay {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+}
+
 .navbar {
   align-items: stretch;
   background-color: #26A69A;
@@ -37,8 +52,10 @@ html, body {
 }
 
 .video-input {
-  padding: 200px 0px;
+  margin: auto;
+  padding: 100px 0px;
   text-align: center;
+  width: 50%;
 }
 
 .video-input-form {
@@ -65,8 +82,8 @@ html, body {
   border-radius: 0px 30px 0px 0px;
   color: #f6f6f6;
   font-size: 15px;
-  padding: 10px;
   outline: none;
+  padding: 10px 20px;
   transition: all 200ms;
 }
 
@@ -75,11 +92,49 @@ html, body {
   opacity: 0.8;
 }
 
-.what-is-this {
-  padding: 200px 0px;
+.control-buttons-container {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0px;
 }
 
-.how-it-works {
-  padding: 200px 0px;
+.control-buttons-container button {
+  background-color: #797979;
+  border: 1px solid #292929;
+  border-radius: 10px;
+  color: #f6f6f6;
+  flex: 1 1 auto;
+  font-size: 20px;
+  outline: none;
+  margin: 10px;
+  padding: 10px;
+  transition: all 200ms;
+}
 
+.control-buttons-container button:hover {
+  background-color: #676767;
+  cursor: pointer;
+}
+
+#what-is-this {
+  align-items: center;
+  display: flex;
+  font-size: 18px;
+  justify-content: center;
+  padding: 50px 0px 150px;
+  margin: auto;
+  width: 50%;
+}
+
+#what-is-this div {
+  flex: 0 1 auto;
+  padding: 20px;
+}
+
+.footer {
+  background-color: #292929;
+  color: #f6f6f6;
+  height: 40px;
+  line-height: 40px;
+  padding: 0px 10px;
 }
