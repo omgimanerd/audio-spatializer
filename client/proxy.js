@@ -1,6 +1,7 @@
 class MarkovProtocol{
-  constructor(recents){
+  constructor(recents, updown){
     this.recents = recents
+    this.updown = updown
   }
 
 
