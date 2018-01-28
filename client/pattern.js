@@ -45,17 +45,17 @@ class Sequence {
 
     this.pointList = []
 
-    first = StaticMethodCall.getNext(equal, null)
+    first = Pattern.getNext(equal, null)
     transformList.push(first)
     pointList.concat(first.getPoints())
     millisEnd.push(pointList.length)
 
-    second = StaticMethodCall.getNext(equal, first.getEndPoint())
+    second = Pattern.getNext(equal, first.getEndPoint())
     transformList.push(second)
     pointList.concat(second.getPoints())
     millisEnd.push(pointList.length)
 
-    third = StaticMethodCall.getNext(equal, second.getEndPoint())
+    third = Pattern.getNext(equal, second.getEndPoint())
     transformList.push(third)
     pointList.concat(third.getPoints())
     millisEnd.push(pointList.length)
@@ -91,7 +91,7 @@ class Sequence {
       curMillis < this.millisEnd[1 + (start + end) / 2]) {
       return (start + end) / 2
     } else if (curMillis < this.millisEnd[(start + end) / 2]) {
-      return bnsCurrentTransform(curMillis, start, (start + end) / 2)
+      return this.bnsCurrentTransform(curMillis, start, (start + end) / 2)
     }
     return bnsCurrentTransform(curMillis, (start + end + 1) / 2, end)
   }
