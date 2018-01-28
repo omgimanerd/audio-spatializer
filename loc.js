@@ -7,18 +7,22 @@ const rotateType = {
   }
 }
 
+const deg2rad = 3.14/180
+
 function sphereToCartesian(rho, theta, psi){
-  pos = [rho*Math.sin(psi)*Math.cos(theta), rho*Math.sin(psi)*Math.sin(theta), rho*Math.cos(psi)]
+  pos = [rho*Math.sin(deg2rad * psi)*Math.cos(deg2rad * theta),
+         rho*Math.sin(deg2rad * psi)*Math.sin(deg2rad * theta),
+         rho*Math.cos(deg2rad * psi)]
   return pos
 }
 
 function cylinderToCartesian(r, theta, z){
-  pos = [r*Math.cos(theta), r*Math.sin(theta), z]
+  pos = [r*Math.cos(deg2rad * theta), r*Math.sin(deg2rad * theta), z]
   return pos
 }
 
 function polarToCartesian(r, theta){
-  pos = [r*Math.cos(theta), r*Math.sin(theta), 0]
+  pos = [r*Math.cos(deg2rad * theta), r*Math.sin(deg2rad * theta), 0]
   return pos
 }
 
@@ -81,12 +85,21 @@ class Transform {
     this.beatCount = beatCount
     this.millis = 0
     for(var i = 0; i < beatCount; i++){
-      this.millis += beatCount.getBeatLength
+      //Peak data needs to be converted into beat lengths (peak[i] - peak[i-1] / sampling rate * 1000)
+      this.millis += getNextBeatLength()
     }
   }
 
   getPoints(){
     throw new error "Invalid Transform"
+  }
+
+  toString(){
+    throw new error "Invalid Transform"
+  }
+
+  getEndPoint(){
+    thrown new error "Invalid Transform"
   }
 }
 
@@ -97,12 +110,20 @@ class Reset {
   }
 
   getPoints(){
-    defPoint = new Point(0, 0, 0)
+    defPoint = new Point(1, 90, 90)
     points = []
     for(var i = 0; i < super.millis; i++){
       points.push(defPoint.getLocation())
     }
     return points
+  }
+
+  toString(){
+    return "Re"
+  }
+
+  getEndPoint(){
+    return new Point(1, 90, 90)
   }
 }
 
@@ -120,6 +141,14 @@ class Jump {
     }
     return points
   }
+
+  toString(){
+    return "Ju"
+  }
+
+  getEndPoint(){
+    return this.target
+  }
 }
 
 
@@ -136,6 +165,14 @@ class Delay extends Transform {
     }
     return points
   }
+
+  toString(){
+    return "De"
+  }
+
+  getEndPoint(){
+    return this.prevPoint
+  }
 }
 
 
@@ -143,6 +180,7 @@ class Flip {
   constructor(prevPoint){
     super(1)
     this.prevPoint = prevPoint
+    this.newPoint = prevPoint
   }
 
   getPoints(){
@@ -151,6 +189,14 @@ class Flip {
     for(var i = 0; i < super.millis; i++){
       points.push(newPoint.getLocation())
     }
+  }
+
+  toString(){
+    return "Fl"
+  }
+
+  getEndPoint(){
+    return this.newPoint
   }
 }
 
@@ -168,5 +214,13 @@ class Rotate {
     for(var i = 0; i < super.millis; i++){
       points.push(this.rotateType(delta, super.millis, i).getLocation())
     }
+  }
+
+  toString(){
+    return "Ro"
+  }
+
+  getEndPoint(){
+    return this.destPoint
   }
 }
