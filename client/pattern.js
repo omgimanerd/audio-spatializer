@@ -1,6 +1,5 @@
 /* eslint-disable require-jsdoc */
-globals Transform
-
+/* globals Transform */
 
 /**
  * A file to implement the idea of a "Pattern" in the spatialization.
@@ -116,3 +115,5 @@ class Sequence {
     return this.millisEnd.slice(current - 20, current)
   }
 }
+
+window.Sequence = Sequence

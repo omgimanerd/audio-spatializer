@@ -13,7 +13,7 @@ const path = require('path')
 const socketIO = require('socket.io')
 const youtubeAudioStream = require('youtube-audio-stream')
 
-const Markov = require('./lib/Markov')
+const Markov = require('./lib/markov')
 
 const app = express()
 const server = http.Server(app)

@@ -6,13 +6,12 @@
 /* eslint-disable require-jsdoc */
 /* globals $, ResonanceAudio, io, Sequence  */
 
+const UPDATE_RATE = 1
+
 const arrayMin = data => {
   let min = Infinity
   for (const element of data) {
     if (element < min) {
-
-const UPDATE_RATE = 1
-
       min = element
     }
   }
@@ -91,7 +90,7 @@ $(document).ready(() => {
     if (!processing) {
       $('.button-loading').show()
       $('.button-idle').hide()
-      $('.video-id-input').prop('disabled', 'disabled')
+      $('.video-url-input').prop('disabled', 'disabled')
       processing = true
 
       // Create an AudioContext for output
@@ -106,43 +105,38 @@ $(document).ready(() => {
       resonanceAudio.output.connect(audioContext.destination)
 
       // Open an XMLHttpRequest to stream audio data from YouTube
-      const videoId = $('.video-id-input').val().substring(32)
-
-
-      //videoId="yQ94uM_e4P4"
+      const videoId = $('.video-url-input').val().split('=')[1]
       const request = new XMLHttpRequest()
-
       request.open('GET', `/stream/${videoId}`, true)
 
 
       request.responseType = 'arraybuffer'
       request.onload = function() {
         // Decode the arraybuffer from the XMLHttpRequest
-        audioContext.decodeAudioData(request.response, buffer => {//request.response
+        audioContext.decodeAudioData(request.response, buffer => {
           // Process the audio stream for spatialization
-
           calculateSpatialVectors(buffer, peaks => {
             $('.button-loading').hide()
             $('.button-idle').show()
-            $('.video-id-input').removeAttr('disabled')
+            $('.video-url-input').removeAttr('disabled')
             processing = false
             // Connect the audio buffer to the AudioContext for output
             const source = resonanceAudio.createSource()
             bufferSource.buffer = buffer
-            console.log("i wanna be the very best like no one ever was")
             bufferSource.connect(source.input)
             bufferSource.start()
-            console.log("i am a pretty butterfly")
             const audioContextDelay = Date.now() - audioContextTimestamp
 
             // Request the current state of the markov chain from the server
             socket.emit('get-markov', pdf => {
+              console.log(peaks)
+              console.log(pdf)
               const sequence = new Sequence(pdf, peaks)
-
               const positionVector = sequence.getPointList()
               audioIntervalId = setInterval(() => {
                 const frame = Math.round(
                   audioContext.currentTime * 1000 - audioContextDelay)
+                console.log(frame, positionVector[frame])
                 source.setPosition(...positionVector[frame])
               }, UPDATE_RATE)
 
@@ -159,11 +153,11 @@ $(document).ready(() => {
               })
 
               $('.upvote').off().on('click', () => {
-
+                alert('Not implemented yet')
               })
 
               $('.downvote').off().on('click', () => {
-
+                alert('Not implemented yet')
               })
             })
           })
@@ -171,7 +165,7 @@ $(document).ready(() => {
           alert('Unable to process audio stream! Fuck!')
           $('.button-loading').hide()
           $('.button-idle').show()
-          $('.video-id-input').removeAttr('disabled')
+          $('.video-url-input').removeAttr('disabled')
           processing = false
           // eslint-disable-next-line no-console
           console.error(error)

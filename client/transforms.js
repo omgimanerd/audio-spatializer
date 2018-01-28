@@ -1,10 +1,16 @@
 /* eslint-disable require-jsdoc */
 /* globals LIN, QUAD, Reset, Jump, Delay, Flip, Rotate */
 
-const point = require('./point')
-const Point = point.Point
-
 const defPoint = new Point(1, 90, 90)
+
+const rotateType = {
+  LIN: (delta, millis, t) => {
+    return delta.divideMove(millis).multiplyMove(t)
+  },
+  QUAD: (delta, millis, t) => {
+    return delta.divideMove(millis).multiplyMove(t / millis)
+  }
+}
 
 class Transform {
   constructor(beatCount) {
@@ -37,16 +43,17 @@ class Transform {
     if (!lastPos) {
       lastPos = defPoint
     }
+    console.log(type)
     switch (type) {
-    case 1:
-      return new Reset()
     case 2:
-      return new Jump()
+      return new Reset()
     case 3:
-      return Delay.makeRandomDelay(lastPos)
+      return new Jump()
     case 4:
-      return new Flip(lastPos)
+      return Delay.makeRandomDelay(lastPos)
     case 5:
+      return new Flip(lastPos)
+    case 6:
       return Rotate.makeRandomRotate(lastPos)
     default:
       throw new Error('Invalid Transform')
@@ -156,7 +163,7 @@ class Rotate extends Transform {
     return new Rotate(Math.random() * 3 + 1,
       lastPos,
       new Point(1, Math.random() * 360, Math.random() * 360),
-      Math.floor(Math.random() * 2) === 0 ? LIN : QUAD)
+      Math.floor(Math.random() * 2) === 0 ? rotateType.LIN : rotateType.QUAD)
   }
 
   getPoints() {

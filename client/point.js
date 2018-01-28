@@ -1,14 +1,5 @@
 /* eslint-disable require-jsdoc */
 
-export const rotateType = {
-  LIN: (delta, millis, t) => {
-    return delta.divideMove(millis).multiplyMove(t)
-  },
-  QUAD: (delta, millis, t) => {
-    return delta.divideMove(millis).multiplyMove(t / millis)
-  }
-}
-
 const DEG2RAD = 3.14 / 180
 
 function sphereToCartesian(rho, theta, psi) {
