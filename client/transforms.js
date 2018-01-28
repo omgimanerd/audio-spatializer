@@ -32,7 +32,7 @@ export class Transform {
     thrown new error "Invalid Transform"
   }
 
-  getNewTransform(type, lastPos){
+  static getNewTransform(type, lastPos){
     if(!lastPos){
       lastPos = defPoint
     }
@@ -42,11 +42,11 @@ export class Transform {
       case 2:
         return new Jump()
       case 3:
-        return new StaticMethodCall.makeRandomDelay(lastPos)
+        return new Delay.makeRandomDelay(lastPos)
       case 4:
         return new Flip(lastPos)
       case 5:
-        return new StaticMethodCall.makeRandomRotate(lastPos)
+        return new Rotate.makeRandomRotate(lastPos)
       default:
         throw new error "No Valid Transform"
     }
