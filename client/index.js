@@ -4,14 +4,15 @@
  * @author Searnsy
  */
 /* eslint-disable require-jsdoc */
-/* globals $, ResonanceAudio, io, getVector */
-
-const UPDATE_RATE = 1
+/* globals $, ResonanceAudio, io, Sequence  */
 
 const arrayMin = data => {
   let min = Infinity
   for (const element of data) {
     if (element < min) {
+
+const UPDATE_RATE = 1
+
       min = element
     }
   }
@@ -105,30 +106,40 @@ $(document).ready(() => {
       resonanceAudio.output.connect(audioContext.destination)
 
       // Open an XMLHttpRequest to stream audio data from YouTube
-      const videoId = $('.video-id-input').val()
+      const videoId = $('.video-id-input').val().substring(32)
+
+
+      //videoId="yQ94uM_e4P4"
       const request = new XMLHttpRequest()
+
       request.open('GET', `/stream/${videoId}`, true)
+
+
       request.responseType = 'arraybuffer'
       request.onload = function() {
         // Decode the arraybuffer from the XMLHttpRequest
-        audioContext.decodeAudioData(request.response, buffer => {
+        audioContext.decodeAudioData(request.response, buffer => {//request.response
           // Process the audio stream for spatialization
+
           calculateSpatialVectors(buffer, peaks => {
             $('.button-loading').hide()
             $('.button-idle').show()
             $('.video-id-input').removeAttr('disabled')
             processing = false
-
             // Connect the audio buffer to the AudioContext for output
             const source = resonanceAudio.createSource()
             bufferSource.buffer = buffer
+            console.log("i wanna be the very best like no one ever was")
             bufferSource.connect(source.input)
             bufferSource.start()
+            console.log("i am a pretty butterfly")
             const audioContextDelay = Date.now() - audioContextTimestamp
 
             // Request the current state of the markov chain from the server
             socket.emit('get-markov', pdf => {
-              const positionVector = Sequence.getVector(pdf, peaks)
+              const sequence = new Sequence(pdf, peaks)
+
+              const positionVector = sequence.getPointList()
               audioIntervalId = setInterval(() => {
                 const frame = Math.round(
                   audioContext.currentTime * 1000 - audioContextDelay)

@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
-/* globals Transform */
+globals Transform
+
 
 /**
  * A file to implement the idea of a "Pattern" in the spatialization.
