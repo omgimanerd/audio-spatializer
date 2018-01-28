@@ -9,7 +9,7 @@
 
   <body>
     <div class='visualization-underlay'>
-      <canvas></canvas>
+      <canvas id='visualization-canvas'></canvas>
     </div>
 
     <div class='container'>
@@ -34,7 +34,14 @@
         <div class='video-input-form-container'>
           <form class='video-input-form'>
             <input class='video-url-input' type='text' />
-            <button type='submit'>Eargasm!</button>
+            <button type='submit'>
+              <div class='button-loading'>
+                <span class='fa fa-2x fa-spinner fa-spin'></span>
+              </div>
+              <div class='button-idle'>
+                Eargasm!
+              </div>
+            </button>
           </form>
         </div>
         <div class='control-buttons-container'>
@@ -64,10 +71,10 @@
           <a href='https://developers.google.com/resonance-audio/'>
             Resonance Audio API
           </a>
-          to the audio in 3D space around the listener to create an immersive
-          listening experience. This web application is best used with stereo
-          headphones or earphones and works best on dubstep or songs with a
-          strong distinguishable beat and bass line.
+          to move the audio source in 3D space around the listener, creating an
+          immersive listening experience. This web application is best used
+          with stereo headphones or earphones and works best on dubstep or
+          songs with a strong distinguishable beat and bass line.
           <br />
           <br />
           You can view the source code for this project
@@ -87,6 +94,6 @@
   <script src='/node_modules/jquery/dist/jquery.min.js'></script>
   <script src='/node_modules/resonance-audio/build/resonance-audio.min.js'>
   </script>
-  <script src='/client/index.js'>
-  </script>
+  <script src='/client/index.js'></script>
+  <script src='/client/visualizer.js'></script>
 </html>
