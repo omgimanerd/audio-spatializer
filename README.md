@@ -10,3 +10,6 @@ headphones/earphones.
 # Authors
   - Alvin Lin (omgimanerd)
   - Andrew Searns (Searnsy)
+
+# License
+[Apache 2](https://github.com/omgimanerd/audio-spatializer/blob/master/LICENSE)
