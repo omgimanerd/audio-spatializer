@@ -11,6 +11,7 @@ const express = require('express')
 const fs = require('fs')
 const http = require('http')
 const path = require('path')
+const youtubeAudioStream = require('youtube-audio-stream')
 const ytdl = require('ytdl-core')
 
 const app = express()
@@ -25,6 +26,17 @@ app.use('/videos', express.static(path.join(__dirname, '/videos')))
 
 app.get('/', (request, response) => {
   response.sendFile(path.join(__dirname, 'index.html'))
+})
+
+app.get('/stream/:videoId', (request, response) => {
+  const videoId = request.params.videoId
+  try {
+    console.log('streamed')
+    youtubeAudioStream(videoId).pipe(response)
+  } catch (exception) {
+    console.error(exception)
+    response.status(500).send(exception)
+  }
 })
 
 app.post('/spatialize', (request, response) => {

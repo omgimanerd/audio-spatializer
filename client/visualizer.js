@@ -47,15 +47,15 @@ const visualize = amplitudes => {
   }, 100)
 }
 
-$(document).ready(() => {
-  const data = []
-  for (let i = 0; i < 100; ++i) {
-    const a = []
-    for (let j = 0; j < 40; ++j) {
-      a.push(Math.random() * 300)
-    }
-    data.push(a)
-  }
-  console.log(data)
-  visualize(data)
-})
+// $(document).ready(() => {
+//   const data = []
+//   for (let i = 0; i < 100; ++i) {
+//     const a = []
+//     for (let j = 0; j < 40; ++j) {
+//       a.push(Math.random() * 300)
+//     }
+//     data.push(a)
+//   }
+//   console.log(data)
+//   visualize(data)
+// })

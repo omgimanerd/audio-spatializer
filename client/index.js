@@ -51,14 +51,13 @@ var soundfile = "/videos/wWN6hZu9jjE.mp4"
 function loadAudioBuffer(soundfile) {
   var request = new XMLHttpRequest();
   request.open('GET', '/stream/wWN6hZu9jjE', true);
-  request.responseType = 'arraybuffer';
+  request.responseType = 'arraybuffer'
 
   // Decode asynchronously
   request.onload = function() {
-    console.log(request.response)
     context.decodeAudioData(request.response, function(buffer) {
       lowFilter(buffer);
-    }, () => {});
+    });
   }
   request.send();
 }
