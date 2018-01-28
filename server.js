@@ -13,6 +13,8 @@ const path = require('path')
 const socketIO = require('socket.io')
 const youtubeAudioStream = require('youtube-audio-stream')
 
+const Markov = require('./lib/Markov')
+
 const app = express()
 const server = http.Server(app)
 const io = socketIO(server)
@@ -41,12 +43,12 @@ app.use((request, response) => {
 })
 
 io.on('connection', socket => {
-  socket.on('markov-update', data => {
-    // TODO: do something with data
+  socket.on('update-markov', data => {
+    //
   })
 
   socket.on('get-markov', callback => {
-
+    callback(new Markov())
   })
 })
 

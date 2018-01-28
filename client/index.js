@@ -4,7 +4,7 @@
  * @author Searnsy
  */
 /* eslint-disable require-jsdoc */
-/* globals $, ResonanceAudio, io */
+/* globals $, ResonanceAudio, io, getVector */
 
 const UPDATE_RATE = 1
 
@@ -126,21 +126,34 @@ $(document).ready(() => {
             bufferSource.start()
             const audioContextDelay = Date.now() - audioContextTimestamp
 
-            audioIntervalId = setInterval(() => {
-              source.setPosition(0, 0, 0)
-              console.log(audioContext.currentTime * 1000 - audioContextDelay)
-            }, UPDATE_RATE)
+            // Request the current state of the markov chain from the server
+            socket.emit('get-markov', pdf => {
+              const positionVector = getVector(pdf, peaks)
+              audioIntervalId = setInterval(() => {
+                const frame = Math.round(
+                  audioContext.currentTime * 1000 - audioContextDelay)
+                source.setPosition(...positionVector[frame])
+              }, UPDATE_RATE)
 
-            bufferSource.onended = () => {
-              clearInterval(audioIntervalId)
-            }
+              bufferSource.onended = () => {
+                clearInterval(audioIntervalId)
+              }
 
-            $('.pause').off().on('click', () => {
-              audioContext.suspend()
-            })
+              $('.pause').off().on('click', () => {
+                audioContext.suspend()
+              })
 
-            $('.resume').off().on('click', () => {
-              audioContext.resume()
+              $('.resume').off().on('click', () => {
+                audioContext.resume()
+              })
+
+              $('.upvote').off().on('click', () => {
+
+              })
+
+              $('.downvote').off().on('click', () => {
+
+              })
             })
           })
         }, error => {
