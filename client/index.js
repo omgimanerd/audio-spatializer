@@ -46,11 +46,13 @@ $(document).ready(() => {
       const source = resonanceAudio.createSource()
       audioElementSource.connect(source.input)
 
+
       let x = -1
+      const convert = 3.14 / 180
       setInterval(() => {
-        source.setPosition(x, 0, 0)
+        source.setPosition(Math.cos(convert * Date.now()), Math.sin(convert * Date.now() ), 0)
         x *= -1
-      }, 600)
+      }, 1)
 
       audioElement.play()
     })
