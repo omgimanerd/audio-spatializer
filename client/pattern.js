@@ -74,10 +74,10 @@ class Sequence {
     }
   }
 
-  static getVector(pdf, peaks) {
-    const sequence = new Sequence(pdf, peaks)
-    return sequence.getPointList()
-  }
+//  static getVector(pdf, peaks) {
+//    const sequence = new Sequence(pdf, peaks)
+//    return sequence.getPointList()
+//  }
 
   updatePDF(pdf) {
     this.pdf = pdf
