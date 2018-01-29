@@ -150,11 +150,19 @@ $(document).ready(() => {
               })
 
               $('.upvote').off().on('click', () => {
-                alert('Not implemented yet')
+                alert('Sequence upvoted!')
+                socket.emit('update-markov', {
+                  direction: 1,
+                  sequence: sequence
+                })
               })
 
               $('.downvote').off().on('click', () => {
-                alert('Not implemented yet')
+                alert('Sequence downvoted!')
+                socket.emit('update-markov', {
+                  direction: -1,
+                  sequence: sequence
+                })
               })
             })
           })

@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 /* globals LIN, QUAD, Reset, Jump, Delay, Flip, Rotate */
 
-const defPoint = new Point(1, 90, 90)
+const defPoint = new Point(1.5, 90, 90)
 
 const rotateType = {
   LIN: (delta, millis, t) => {
@@ -166,7 +166,7 @@ class Rotate extends Transform {
       Math.random() * 3 + 1,
       sequence,
       lastPos,
-      new Point(1, Math.random() * 360, Math.random() * 360),
+      new Point(1.5, Math.random() * 360, Math.random() * 360),
       Math.floor(Math.random() * 2) === 0 ? rotateType.LIN : rotateType.QUAD)
   }
 
