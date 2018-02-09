@@ -3,38 +3,8 @@
  * @author omgimanerd (alvin@omgimanerd.tech)
  * @author Searnsy
  */
-/* eslint-disable require-jsdoc */
-/* globals $, ResonanceAudio, io, Sequence  */
 
-const UPDATE_RATE = 1
-
-const arrayMin = data => {
-  let min = Infinity
-  for (const element of data) {
-    if (element < min) {
-      min = element
-    }
-  }
-  return min
-}
-
-const arrayMax = data => {
-  let max = -Infinity
-  for (const element of data) {
-    if (element > max) {
-      max = element
-    }
-  }
-  return max
-}
-
-/**
- * This method calculates the peaks in the audio buffer and computes a list
- * of vector positions to place the the audio source.
- * @param {AudioBufferSourceNode} buffer The audio buffer data
- * @param {Function} callback The callback to invoke with the vector positions
- */
-const calculateSpatialVectors = (buffer, callback) => {
+const getAudioPeaks = (buffer) => {
   // Create offline context
   const offlineAudioContext = new OfflineAudioContext(
     1, buffer.length, buffer.sampleRate)
@@ -53,12 +23,21 @@ const calculateSpatialVectors = (buffer, callback) => {
 
   bufferSource.start(0)
   offlineAudioContext.startRendering()
-
   offlineAudioContext.oncomplete = data => {
     const filteredBuffer = data.renderedBuffer
+    // This channelData variable is mostly what you will be looking for
     const channelData = filteredBuffer.getChannelData(0)
-    const max = arrayMax(channelData)
-    const min = arrayMin(channelData)
+
+    // Below is just a sample algorithm we used for naive beat detection
+    let max = -Infinity
+    let min = Infinity
+    for (const element of channelData) {
+      if (element > max) {
+        max = element
+      } else if (element < min) {
+        min = element
+      }
+    }
     const threshold = min + (max - min) * 0.5
     const peaks = []
     for (let i = 0; i < channelData.length; ++i) {
@@ -72,112 +51,33 @@ const calculateSpatialVectors = (buffer, callback) => {
       peaks[i] /= buffer.sampleRate
       peaks[i] *= 1000
     }
-    callback(peaks)
+    console.log(peaks)
   }
 }
 
-$(document).ready(() => {
-  let audioContext = null
-  let audioIntervalId = null
+document.getElementById('video-input-form').onsubmit = () => {
+  const videoId = document.getElementById('video-id-input').value
+  const audioContext = new AudioContext()
+  const audioContextBuffer = audioContext.createBufferSource()
+  const request = new XMLHttpRequest()
 
-  // Create a socket object for communicating information about the markov chain
-  const socket = io()
+  // Sends a request to our web server for the audio stream
+  request.open('GET', `/stream/${videoId}`, true)
+  request.responseType = 'arraybuffer'
+  request.onload = function() {
 
-  $('.button-loading').hide()
-  let processing = false
+    // Decode the stream into something we can digest
+    audioContext.decodeAudioData(request.response, buffer => {
+      getAudioPeaks(buffer)
 
-  $('.video-input-form').submit(() => {
-    if (!processing) {
-      $('.button-loading').show()
-      $('.button-idle').hide()
-      $('.video-url-input').prop('disabled', 'disabled')
-      processing = true
-
-      // Create an AudioContext for output
-      if (audioContext) {
-        audioContext.close()
-        clearInterval(audioIntervalId)
-      }
-      audioContext = new AudioContext()
-      const audioContextTimestamp = Date.now()
-      const bufferSource = audioContext.createBufferSource()
-      const resonanceAudio = new ResonanceAudio(audioContext)
-      resonanceAudio.output.connect(audioContext.destination)
-
-      // Open an XMLHttpRequest to stream audio data from YouTube
-      const videoId = $('.video-url-input').val().split('=')[1]
-      const request = new XMLHttpRequest()
-      request.open('GET', `/stream/${videoId}`, true)
-
-
-      request.responseType = 'arraybuffer'
-      request.onload = function() {
-        // Decode the arraybuffer from the XMLHttpRequest
-        audioContext.decodeAudioData(request.response, buffer => {
-          // Process the audio stream for spatialization
-          calculateSpatialVectors(buffer, peaks => {
-            $('.button-loading').hide()
-            $('.button-idle').show()
-            $('.video-url-input').removeAttr('disabled')
-            processing = false
-            // Connect the audio buffer to the AudioContext for output
-            const source = resonanceAudio.createSource()
-            bufferSource.buffer = buffer
-            bufferSource.connect(source.input)
-            bufferSource.start()
-            const audioContextDelay = Date.now() - audioContextTimestamp
-
-            // Request the current state of the markov chain from the server
-            socket.emit('get-markov', pdf => {
-              const sequence = new Sequence(pdf, peaks)
-              const positionVector = sequence.getPointList()
-              audioIntervalId = setInterval(() => {
-                const frame = Math.round(
-                  audioContext.currentTime * 1000 - audioContextDelay)
-                source.setPosition(...positionVector[frame])
-              }, UPDATE_RATE)
-
-              bufferSource.onended = () => {
-                clearInterval(audioIntervalId)
-              }
-
-              $('.pause').off().on('click', () => {
-                audioContext.suspend()
-              })
-
-              $('.resume').off().on('click', () => {
-                audioContext.resume()
-              })
-
-              $('.upvote').off().on('click', () => {
-                alert('Sequence upvoted!')
-                socket.emit('update-markov', {
-                  direction: 1,
-                  sequence: sequence
-                })
-              })
-
-              $('.downvote').off().on('click', () => {
-                alert('Sequence downvoted!')
-                socket.emit('update-markov', {
-                  direction: -1,
-                  sequence: sequence
-                })
-              })
-            })
-          })
-        }, error => {
-          alert('Unable to process audio stream! Fuck!')
-          $('.button-loading').hide()
-          $('.button-idle').show()
-          $('.video-url-input').removeAttr('disabled')
-          processing = false
-          // eslint-disable-next-line no-console
-          console.error(error)
-        })
-      }
-      request.send()
-    }
-    return false
-  })
-})
+      // These three lines of code will play the video's audio
+      audioContextBuffer.buffer = buffer
+      audioContextBuffer.connect(audioContext.destination)
+      audioContextBuffer.start()
+    }, error => {
+      console.log('Unable to decode audio stream')
+    })
+  }
+  request.send()
+  return false
+}
