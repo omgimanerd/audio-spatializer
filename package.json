@@ -2,13 +2,9 @@
   "name": "audio-spatializer",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "express": "^4.16.2",
-    "jquery": "^3.3.1",
-    "morgan": "^1.9.0",
-    "resonance-audio": "^1.0.0",
-    "socket.io": "^2.0.4",
     "youtube-audio-stream": "^0.0.50"
   }
 }
