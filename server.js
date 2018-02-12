@@ -7,14 +7,10 @@ const PORT = 5000
 
 // Dependencies.
 const express = require('express')
-const http = require('http')
 const path = require('path')
 const youtubeAudioStream = require('youtube-audio-stream')
 
 const app = express()
-const server = http.Server(app)
-
-app.set('port', PORT)
 
 app.use('/client', express.static(path.join(__dirname, '/client')))
 
@@ -23,7 +19,7 @@ app.get('/', (request, response) => {
 })
 
 app.get('/stream/:videoId', (request, response) => {
-  const videoId = request.params.videoId
+  const videoId = `https://www.youtube.com/watch?v=${request.params.videoId}`
   try {
     youtubeAudioStream(videoId).pipe(response)
   } catch (exception) {
@@ -32,6 +28,6 @@ app.get('/stream/:videoId', (request, response) => {
 })
 
 // Starts the server.
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Starting server on port ${PORT}`)
 })
