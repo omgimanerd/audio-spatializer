@@ -8,6 +8,11 @@
 
 const UPDATE_RATE = 1
 
+/**
+ * Finds the minimum element in an array of numbers.
+ * @param {Array<number>} data The array to find the min in.
+ * @return {number}
+ */
 const arrayMin = data => {
   let min = Infinity
   for (const element of data) {
@@ -18,6 +23,11 @@ const arrayMin = data => {
   return min
 }
 
+/**
+ * Finds the maximum element in an array of numbers.
+ * @param {Array<number>} data The array to find the max in.
+ * @return {number}
+ */
 const arrayMax = data => {
   let max = -Infinity
   for (const element of data) {
@@ -111,7 +121,7 @@ $(document).ready(() => {
         videoId = videoUrl.split('=')[1]
       } catch (error) {
       // eslint-disable-next-line no-console
-        console.error('Unable to parse video ID')
+        console.error('Unable to parse video ID. Our code is also really bad.')
         processing = false
         return
       }

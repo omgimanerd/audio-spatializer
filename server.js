@@ -34,10 +34,10 @@ app.post('/stream/:videoId', (request, response) => {
   const videoUrl = `https://www.youtube.com/watch?v=${videoId}`
   if (!ytdl.validateURL(videoUrl)) {
     response.send({ success: false })
-    return
+  } else {
+    ytdl(videoUrl, { filter: format => format.container === 'mp4' })
+      .pipe(response)
   }
-  ytdl(videoUrl, { filter: format => format.container === 'mp4' })
-    .pipe(response)
 })
 
 app.use((request, response) => {
@@ -45,8 +45,8 @@ app.use((request, response) => {
 })
 
 io.on('connection', socket => {
-  socket.on('update-markov', data => {
-    //
+  socket.on('update-markov', () => {
+    // TODO: unimplemented
   })
 
   socket.on('get-markov', callback => {
