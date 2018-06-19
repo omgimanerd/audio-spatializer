@@ -105,11 +105,18 @@ $(document).ready(() => {
       resonanceAudio.output.connect(audioContext.destination)
 
       // Open an XMLHttpRequest to stream audio data from YouTube
-      const videoId = $('.video-url-input').val().split('=')[1]
+      const videoUrl = $('.video-url-input').val()
+      let videoId = ''
+      try {
+        videoId = videoUrl.split('=')[1]
+      } catch (error) {
+      // eslint-disable-next-line no-console
+        console.error('Unable to parse video ID')
+        processing = false
+        return
+      }
       const request = new XMLHttpRequest()
-      request.open('GET', `/stream/${videoId}`, true)
-
-
+      request.open('POST', `/stream/${videoId}`, true)
       request.responseType = 'arraybuffer'
       request.onload = function() {
         // Decode the arraybuffer from the XMLHttpRequest

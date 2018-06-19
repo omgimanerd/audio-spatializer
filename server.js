@@ -11,7 +11,7 @@ const http = require('http')
 const morgan = require('morgan')
 const path = require('path')
 const socketIO = require('socket.io')
-const youtubeAudioStream = require('youtube-audio-stream')
+const ytdl = require('ytdl-core')
 
 const Markov = require('./lib/markov')
 
@@ -29,13 +29,15 @@ app.get('/', (request, response) => {
   response.sendFile(path.join(__dirname, 'index.html'))
 })
 
-app.get('/stream/:videoId', (request, response) => {
+app.post('/stream/:videoId', (request, response) => {
   const videoId = request.params.videoId
-  try {
-    youtubeAudioStream(videoId).pipe(response)
-  } catch (exception) {
-    response.status(500).send(exception)
+  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`
+  if (!ytdl.validateURL(videoUrl)) {
+    response.send({ success: false })
+    return
   }
+  ytdl(videoUrl, { filter: format => format.container === 'mp4' })
+    .pipe(response)
 })
 
 app.use((request, response) => {
