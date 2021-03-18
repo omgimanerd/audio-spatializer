@@ -11,6 +11,7 @@ you must have stereo headphones/earphones.
 The only thing required to replicate this project is `node.js >= 6.0.0`
 ```
 git clone https://github.com/omgimanerd/audio-spatializer
+cd audio-spatializer
 npm install    # or yarn install
 node server.js
 ```
